@@ -23,6 +23,11 @@ export class Toki extends Actor {
     onInitialize(engine) {
         this.graphics.use(Resources.Toki.toSprite())
         this.scale = new Vector(0.4, 0.4)
+
+        // extra safety voor keyboard input (GitHub Pages fix)
+        engine.canvas.tabIndex = 1
+        engine.canvas.focus()
+        engine.input.keyboard.enabled = true
     }
 
     onPreUpdate(engine, delta) {
@@ -30,6 +35,7 @@ export class Toki extends Actor {
 
         const kb = engine.input.keyboard
 
+        // LEFT / RIGHT
         if (kb.isHeld(Keys.A)) {
             this.vel.x = -250
             this.scale.x = -0.4
@@ -40,7 +46,8 @@ export class Toki extends Actor {
             this.scale.x = 0.4
         }
 
-        if (kb.isHeld(Keys.W) && this.isGrounded) {
+        // JUMP (FIX: wasPressed i.p.v. isHeld)
+        if (kb.wasPressed(Keys.W) && this.isGrounded) {
             this.vel.y = -1000
             this.isGrounded = false
         }
@@ -66,9 +73,15 @@ export class Toki extends Actor {
 
                 const standingOnTop = this.pos.y < actor.pos.y
                 const closeEnoughX = distanceX < actor.width / 2 + 30
-                const closeEnoughY = distanceY < 210
+                const closeEnoughY = distanceY < 200
 
-                if (standingOnTop && closeEnoughX && closeEnoughY && this.vel.y >= 0) {
+                // FIX: iets striktere velocity check (stabieler online)
+                if (
+                    standingOnTop &&
+                    closeEnoughX &&
+                    closeEnoughY &&
+                    this.vel.y >= -10
+                ) {
                     this.isGrounded = true
                 }
             }
@@ -100,6 +113,7 @@ export class Toki extends Actor {
                 const distanceY = Math.abs(this.pos.y - actor.pos.y)
 
                 if (distanceX < 70 && distanceY < 130) {
+
                     const tokiIsFalling = this.vel.y > 0
                     const tokiIsAboveGuard = this.pos.y < actor.pos.y - 20
 
@@ -125,9 +139,7 @@ export class Toki extends Actor {
     }
 
     checkWhispGoal(engine) {
-        if (this.hasWon) {
-            return
-        }
+        if (this.hasWon) return
 
         for (let actor of engine.currentScene.actors) {
             if (actor.name === "whisp") {
