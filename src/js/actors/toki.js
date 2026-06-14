@@ -48,7 +48,7 @@ export class Toki extends Actor {
         }
 
         // ✅ FIX: jump werkt altijd (geen grounded check meer)
-        if (kb.wasPressed(Keys.W)) {
+        if (kb.wasPressed(Keys.Space)) {
             this.vel.y = -1000
         }
 
