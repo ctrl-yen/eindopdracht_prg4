@@ -40,7 +40,7 @@ export class Toki extends Actor {
             this.scale.x = 0.4
         }
 
-        if (kb.wasPressed(Keys.W) && this.isGrounded) {
+        if (kb.isHeld(Keys.W) && this.isGrounded) {
             this.vel.y = -1000
             this.isGrounded = false
         }
