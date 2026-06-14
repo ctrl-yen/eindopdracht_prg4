@@ -24,7 +24,7 @@ export class Toki extends Actor {
         this.graphics.use(Resources.Toki.toSprite())
         this.scale = new Vector(0.4, 0.4)
 
-        // extra safety voor keyboard input (GitHub Pages fix)
+        // extra safety (GitHub Pages input focus fix)
         engine.canvas.tabIndex = 1
         engine.canvas.focus()
         engine.input.keyboard.enabled = true
@@ -35,21 +35,21 @@ export class Toki extends Actor {
 
         const kb = engine.input.keyboard
 
-        // LEFT / RIGHT
+        // LEFT
         if (kb.isHeld(Keys.A)) {
             this.vel.x = -250
             this.scale.x = -0.4
         }
 
+        // RIGHT
         if (kb.isHeld(Keys.D)) {
             this.vel.x = 250
             this.scale.x = 0.4
         }
 
-        // JUMP (FIX: wasPressed i.p.v. isHeld)
-        if (kb.wasPressed(Keys.W) && this.isGrounded) {
+        // ✅ FIX: jump werkt altijd (geen grounded check meer)
+        if (kb.wasPressed(Keys.W)) {
             this.vel.y = -1000
-            this.isGrounded = false
         }
 
         this.checkGrounded(engine)
@@ -75,7 +75,6 @@ export class Toki extends Actor {
                 const closeEnoughX = distanceX < actor.width / 2 + 30
                 const closeEnoughY = distanceY < 200
 
-                // FIX: iets striktere velocity check (stabieler online)
                 if (
                     standingOnTop &&
                     closeEnoughX &&
